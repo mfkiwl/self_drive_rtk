@@ -1,0 +1,46 @@
+# _*_ coding: UTF-8 _*_
+
+import time
+from multiprocessing import Process
+from tcp import tcp
+from moveBase import moveBase
+from ctrl import ctrl
+from main import main
+from rtk import rtk
+from pushImg import pushImg
+
+if __name__ == '__main__':
+    p_list = []
+    node = tcp()
+    p = Process(target=node.handle)
+    p_list.append(p)
+
+    node = moveBase()
+    p = Process(target=node.run)
+    p_list.append(p)
+
+    node = ctrl()
+    p = Process(target=node.run)
+    p_list.append(p)
+
+    node = main()
+    p = Process(target=node.run)
+    p_list.append(p)
+    # '''
+    node = rtk()
+    p = Process(target=node.run)
+    p_list.append(p)
+    # '''
+    node = pushImg()
+    p = Process(target=node.run)
+    p_list.append(p)
+    try: 
+        for p in p_list:
+            p.daemon = True
+            p.start()
+    except:
+        pass
+
+    while True:
+        time.sleep(1000)
+

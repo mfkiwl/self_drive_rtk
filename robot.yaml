@@ -1,0 +1,3 @@
+robot:
+  key: !!python/unicode 'key1'
+  name: 耕地机器人

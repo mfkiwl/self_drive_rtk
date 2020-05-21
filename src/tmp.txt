@@ -1,0 +1,1 @@
+_gateway (192.168.0.1) at 78:52:62:2e:af:1a [ether] on enp3s0
