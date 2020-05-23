@@ -26,14 +26,14 @@ if __name__ == '__main__':
     node = main()
     p = Process(target=node.run)
     p_list.append(p)
-    # '''
+    '''
     node = rtk()
     p = Process(target=node.run)
     p_list.append(p)
-    # '''
     node = pushImg()
     p = Process(target=node.run)
     p_list.append(p)
+    '''
     try: 
         for p in p_list:
             p.daemon = True

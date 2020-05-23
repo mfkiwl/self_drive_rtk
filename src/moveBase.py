@@ -5,8 +5,8 @@ import json
 import time
 from math import cos, sin
 import serialCmd
-from motorTongyiIxL import Motor
-# from motorDMK import Motor
+# from motorTongyiIxL import Motor
+from motorDMK import Motor
 from redisHandler import redisHandler
 
 

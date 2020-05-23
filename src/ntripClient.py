@@ -1,3 +1,4 @@
+#coding=utf-8
 import socket
 import serial
 import base64
@@ -6,6 +7,7 @@ import datetime
 from functools import reduce
 import operator
 import Queue as queue
+# import queue
 import logging
 
 # from generate_sol import SolGenerator
@@ -63,7 +65,8 @@ def generate_gga():
 
 # def recv_from_svr(s, callback):
 def recv_from_svr(s):
-    port = '/dev/ttyS6'
+    # port = '/dev/ttyS6'
+    port = '/dev/ttyUSB0'
     bps = 115200
     ser=serial.Serial(port, bps)
     while True:
@@ -78,6 +81,7 @@ def recv_from_svr(s):
             # print(hex(dat[0]))
             # print(len(dat))
             ser.write(dat)
+            print(dat)
             # print(time.time()-pre_t)
 
 

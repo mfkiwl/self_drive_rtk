@@ -25,6 +25,7 @@ class Motor:
             'enable': 0x0066,       # 电机使能,0停止，1正转，2反转，3刹车, 4刹车解除
             'id':0x0006,            # modbus id
             'mode':0x0049,          # 0力矩模式，1速度模式
+            'err_code': 0x0072,     # 错误代码
         }
         self._max_speed = 2500
         self._id = 1
@@ -36,6 +37,8 @@ class Motor:
         try:
             print('init motoring')
             self._motor.write_register(self._addr_data['485_enable'], 1)
+            self._motor.write_register(self._addr_data['fix_speed'], 0, functioncode=6)
+            self._motor.write_register(self._addr_data['enable'], 4, functioncode=6)
         except Exception as e:
             print(e)
 
@@ -50,15 +53,15 @@ class Motor:
         if speed >= 0:
             # 速度大于等于零
             try:
-                self._motor.write_register(self._addr_data['enable'], 1, functioncode=6)
                 self._motor.write_register(self._addr_data['fix_speed'], speed, functioncode=6)
+                self._motor.write_register(self._addr_data['enable'], 1, functioncode=6)
             except:
                 pass
         elif speed < 0:
             # 速度小于零
             try:
+                self._motor.write_register(self._addr_data['fix_speed'], -speed, functioncode=6)
                 self._motor.write_register(self._addr_data['enable'], 2, functioncode=6)
-                self._motor.write_register(self._addr_data['fix_speed'], speed, functioncode=6)
             except:
                 pass
         return True
@@ -70,6 +73,7 @@ class Motor:
         :return: speed
         """
         data = ['-', '-', '-', '-']
+        # data[3] = self._motor.read_register(self._addr_data['err_code'])
         return data
 
     def read_speed(self):
