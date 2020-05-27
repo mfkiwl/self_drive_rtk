@@ -3,7 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['robot.py'],
+a = Analysis(['track_cmd.py'],
              pathex=['/home/sweet/workspace/self_drive_rtk/src'],
              binaries=[],
              datas=[],
@@ -21,7 +21,7 @@ exe = EXE(pyz,
           a.scripts,
           [],
           exclude_binaries=True,
-          name='robot',
+          name='track_cmd',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
@@ -34,4 +34,4 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                upx_exclude=[],
-               name='robot')
+               name='track_cmd')

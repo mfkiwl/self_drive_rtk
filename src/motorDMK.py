@@ -77,10 +77,12 @@ class Motor:
         :return: speed
         """
         data = ['-', '-', '-', '-']
+        '''
         data[0] = self.read_speed()
         data[1] = self._motor.read_register(self._addr_data['u'])
         data[2] = self._motor.read_register(self._addr_data['i'])
         data[3] = self._motor.read_register(self._addr_data['err_code'])
+        '''
         return data
 
     def read_speed(self):

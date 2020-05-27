@@ -148,7 +148,9 @@ class pushImg(redisHandler):
         print('camera on')
         self.init()
         pre_time = time.time()
-
+        if not self.cap:
+            # 无摄像头，关闭线程
+            return
         while True:
             try:
                 self.q_get()

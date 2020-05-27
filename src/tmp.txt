@@ -1,1 +1,2 @@
 _gateway (192.168.0.1) at 78:52:62:2e:af:1a [ether] on enp3s0
+XiaoQiang (192.168.28.1) at 50:d2:f5:fc:c7:21 [ether] on wlp4s0b1

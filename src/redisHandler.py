@@ -53,6 +53,7 @@ class redisHandler():
 
     def t_sub(self):
         # 订阅redis topic 线程
+        print(self.sub_topics)
         if len(self.sub_topics) == 0:
             return
         ps = self.rc.pubsub()

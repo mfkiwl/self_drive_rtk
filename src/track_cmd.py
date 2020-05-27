@@ -59,7 +59,7 @@ class track_cmd(redisHandler):
                             y0 = item[1]
                             cmd = item[2]
                             d = math.sqrt((x-x0)**2 + (y-y0)**2)
-                            print(d)
+                            # print(d)
                             if d <= delta_goal:
                                 for i_cmd in cmd:
                                     print(i_cmd)
