@@ -55,9 +55,9 @@ class track_cmd(redisHandler):
                     y = position['p'][1]
                     try:
                         for item in cmd_list:
-                            x0 = item[0]
-                            y0 = item[1]
-                            cmd = item[2]
+                            x0 = item[0][0]
+                            y0 = item[0][1]
+                            cmd = item[1]
                             d = math.sqrt((x-x0)**2 + (y-y0)**2)
                             # print(d)
                             if d <= delta_goal:
@@ -65,7 +65,7 @@ class track_cmd(redisHandler):
                                     print(i_cmd)
                                     data_cmd['data'] = i_cmd
                                     self.pub_all(data_cmd)
-                                    time.sleep(0.5)
+                                    time.sleep(0.2)
                     except Exception as e:
                         print(e)
             elif header == 'auto_on':
