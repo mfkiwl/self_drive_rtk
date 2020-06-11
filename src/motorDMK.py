@@ -76,7 +76,7 @@ class Motor:
         # 读速度, 电压，电流
         :return: speed
         """
-        data = ['-', '-', '-', '-']
+        data = [-1, -1, -1, -1]
         '''
         data[0] = self.read_speed()
         data[1] = self._motor.read_register(self._addr_data['u'])

@@ -50,6 +50,9 @@ class main(redisHandler):
                             elif header == 'auto_off':
                                 #　自动结束
                                 auto_flag = False
+                        elif header == 'get_base_info':
+                            # 获取基本信息
+                            self.rc.publish('move_base_in', data)
                         elif header == 'shutdown':
                             # 关机
                             self.sys_ctrl.shut_down()

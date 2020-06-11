@@ -5,10 +5,8 @@ import time
 import serial
 import pyproj
 import threading
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import MultipleLocator
 from multiprocessing import Queue
+import keyboard
 import numpy as np
 from tf import transformations
 import pygame
@@ -157,35 +155,9 @@ def key_event():
                     left_enter_flag = True
             except:
                 pass
+    # keyboard.hook(press_keys)
+    # keyboard.wait()
 
-def call_back(event):
-    global enter_flag
-    global space_flag
-    global ctr_flag
-    global left_enter_flag
-    global reset
-    try:
-        event_key = event.key
-        if event_key == 'enter':
-            enter_flag = True
-        elif event_key == 'control':
-            ctr_flag = True
-        elif event_key == ' ':
-            space_flag = True
-        elif event_key == 'a':
-            left_enter_flag = True
-        elif event_key == 'up':
-            reset = True
-        '''
-        print(event_key)
-        print(enter_flag)
-        print(space_flag)
-        print(ctr_flag)
-        print(left_enter_flag)
-        print(reset)
-        # '''
-    except:
-        pass
 
 if __name__ == '__main__':
     rtk_rover = rtk()
@@ -193,38 +165,19 @@ if __name__ == '__main__':
     global space_flag
     global ctr_flag
     global left_enter_flag
-    global reset       # 文件名更新
     space_flag = False
     enter_flag = False
     ctr_flag = False
     left_enter_flag = False
-    ind = 0
-    reset = False
-    file_name = 'position' + str(ind) + '.txt'
-    '''
     p = threading.Thread(target=key_event)
     p.setDaemon(True)
     p.start()
-    '''
-    fig, ax = plt.subplots()
-    # 键盘事件
-    fig.canvas.mpl_connect('key_press_event', call_back)
     position_list = []
-    ox = []
-    oy = []
     while True:
-        plt.axis('equal')
-        plt.cla()
-        plt.grid(True)
-        if ox and oy:
-            plt.plot(ox, oy, '.k')
-        plt.pause(0.1)
-
         data = rtk_rover.get_data()
         if not data:
             continue
         p = data['p']
-
         # p = p + rtk_rover.wgs84.translation
         # p =np.dot(p, rtk_rover.wgs84.rotation)
         # print('rtk: %d, x: %.3f, y: %.3f, z: %.3f, angle: %.2f'%(data['is_fix'], p[0], p[1], p[2], data['angle']))
@@ -239,20 +192,16 @@ if __name__ == '__main__':
                 len_p = dx**2 + dy**2
                 print(len_p)
                 if len_p >= 0.25 and data['is_fix'] == 4:
-                    position_list.append([p[0], p[1]])
-                    ox.append(p[0])
-                    oy.append(p[1])
+                    # position_list.append([p[0], p[1], p[2]])
                     print('aoto record: %d'%len(position_list))
-                    # print('rtk: %d, x: %.3f, y: %.3f, z: %.3f, angle: %.2f, rtcm:%s'%(data['is_fix'], p[0], p[1], p[2], data['angle'], data['rtcm']))
+                    print('rtk: %d, x: %.3f, y: %.3f, z: %.3f, angle: %.2f, rtcm:%s'%(data['is_fix'], p[0], p[1], p[2], data['angle'], data['rtcm']))
             except Exception as e:
                 print(e)
         if left_enter_flag:
             # 关闭自动记录，手动记录
             space_flag = False
             left_enter_flag = False
-            position_list.append([p[0], p[1]])
-            ox.append(p[0])
-            oy.append(p[1])
+            position_list.append([p[0], p[1], p[2]])
             print('record')
             print('rtk: %d, x: %.3f, y: %.3f, z: %.3f, angle: %.2f, rtcm:%s'%(data['is_fix'], p[0], p[1], p[2], data['angle'], data['rtcm']))
         if enter_flag:
@@ -260,7 +209,7 @@ if __name__ == '__main__':
             enter_flag = False
             temp = np.array(position_list)
             try:
-                np.savetxt(file_name, temp)
+                np.savetxt('position_list.txt', temp)
                 print('saved')
             except Exception as e:
                 print(e)
@@ -270,19 +219,3 @@ if __name__ == '__main__':
             ctr_flag = False
             print('rtk: %d, x: %.3f, y: %.3f, z: %.3f, angle: %.2f, rtcm:%s'%(data['is_fix'], p[0], p[1], p[2], data['angle'], data['rtcm']))
 
-        if reset:
-            # 更换文件名
-            reset = False
-            temp = np.array(position_list)
-            try:
-                np.savetxt(file_name, temp)
-                print(file_name)
-                ind += 1
-                file_name = 'position' + str(ind) + '.txt'
-                position_list = []
-                ox = []
-                oy = []
-                print('saved')
-            except Exception as e:
-                print(e)
-            print('rtk: %d, x: %.3f, y: %.3f, z: %.3f, angle: %.2f, rtcm:%s'%(data['is_fix'], p[0], p[1], p[2], data['angle'], data['rtcm']))

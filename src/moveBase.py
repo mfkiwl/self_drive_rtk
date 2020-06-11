@@ -18,7 +18,9 @@ class moveBase(redisHandler):
         self.pub_topics = ['move_base_out']
         self.sub_topics = ['move_base_in']
         self.left_wheel = Motor(2, '/dev/ttyS2')
+        # self.left_wheel1 = Motor(1, '/dev/ttyS2')
         self.right_wheel = Motor(1, '/dev/ttyS3')
+        # self.right_wheel1 = Motor(2, '/dev/ttyS3')
         self.base_info = {'left':[0,0,0,0], 'right':[0,0,0,0]}
         self.init_motor()
         self.start_sub()
@@ -59,6 +61,13 @@ class moveBase(redisHandler):
                             'data':base_info
                             }
                     self.pub_all(data_pub)
+                elif header == 'get_base_info':
+                    base_info = self.read_base_info()
+                    data_pub = {
+                            'header':'base_info',
+                            'data':base_info
+                            }
+                    self.pub_all(data_pub)
             except Exception as e:
                 print('move base err')
                 print(e)
@@ -85,7 +94,9 @@ class moveBase(redisHandler):
         r  = r * speed / 100.0 * y
         print('speed_l: ', l, 'speed_r: ', r)
         self.left_wheel.write_speed(l)
+        # self.left_wheel1.write_speed(l)
         self.right_wheel.write_speed(r)
+        # self.right_wheel1.write_speed(r)
         return True
 
     def read_speed(self):

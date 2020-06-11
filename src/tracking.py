@@ -163,9 +163,17 @@ def diff_speed_control(state, trajectory, pind):
     x0 = state.x
     y0 = state.y
     yaw0 = state.yaw
-    # 目标点坐标
-    x1  = trajectory.cx[ind]
-    y1  = trajectory.cy[ind]
+    # 当前点(车中心点)沿着yaw0方向平移0.5m(即车头位置), 放大角度变化导致的位置变化
+    c, s = math.cos(yaw0), math.sin(yaw0)
+    rx = 0.5
+    ry = 0
+    tx = c * rx - s * ry
+    ty = s * rx + c * ry
+    x0 += tx
+    y0 += ty
+    # 目标点坐标,相应平移tx, ty
+    x1  = trajectory.cx[ind] + tx
+    y1  = trajectory.cy[ind] + ty
     yaw1  = trajectory.cyaw[ind]
     # 当前点姿态向量，为单位向量
     p_b = np.array([math.cos(yaw0), math.sin(yaw0)])

@@ -92,12 +92,11 @@ class Motor:
                 print('-----------------')
                 speed=-(0xffff-speed)
             speed /=10.0
-            print(str(speed))
-            return str(speed)
+            return round(speed)
         except BaseException as e:
             # print e
             # self.ini_motor()
-            return 0
+            return -1
 
     def write_speed(self, speed):
         """
@@ -163,7 +162,7 @@ class Motor:
         except BaseException as e:
             # print e
             # self.ini_motor()
-            return 0, 0
+            return -1, -1
 
     def read_err(self):
         """
@@ -177,7 +176,7 @@ class Motor:
         except BaseException as e:
             # print e
             # self.ini_motor()
-            return 0
+            return -1
 
 
 
