@@ -14,36 +14,52 @@ class ntripClient():
         # 下发串口
         self.ser=serial.Serial(ser_port, bps)
         # 连接ntrip caster
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.connect((host, port))
-        # ntrip 协议头
-        username = "sweet"  
-        password = 'dian123456'
-        pwd = base64.b64encode("{}:{}".format(username, password).encode('ascii'))
-        pwd = pwd.decode('ascii')
-        self.header = \
-            "GET /%s HTTP/1.1\r\n" % mount_pt + \
-            "User-Agent: NTRIP client.py/0.1\r\n" + \
-            "Authorization: Basic {}\r\n\r\n".format(pwd)
+        self.svr_addr = (host, port)
+        self.mount_pt = mount_pt
 
 
     def recv_from_svr(self):
         # RTCM 消息接收
+        timeout = 30
+        pre_time = time.time()
         while True:
-            pre_t =time.time()
-            head_flag = False
+            now = time.time()
+            if now - pre_time >= 30:
+                # 超时未收到服务器消息重连
+                print('time out')
+                self.conn_svr()
             try:
                 dat = self.s.recv(1056) 
                 # print(dat)
             except socket.error:
                 print('err')
                 dat = []
+            except Exception as e:
+                print(e)
             if len(dat) > 0:
+                pre_time = now
                 self.ser.write(dat)
         self.s.close()
 
-    def run(self):
-        # 主程序
+    def conn_svr(self):
+        # 连接ntrip caster
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        while True:
+            try:
+                self.s.connect(self.svr_addr)
+                break
+            except Exception as e:
+                time.sleep(1)
+                print('ntrip conn svr err', e)
+        # ntrip 协议头
+        username = "sweet"  
+        password = 'dian123456'
+        pwd = base64.b64encode("{}:{}".format(username, password).encode('ascii'))
+        pwd = pwd.decode('ascii')
+        self.header = \
+            "GET /%s HTTP/1.1\r\n" % self.mount_pt + \
+            "User-Agent: NTRIP client.py/0.1\r\n" + \
+            "Authorization: Basic {}\r\n\r\n".format(pwd)
         while True:
             # ntrip挂载
             print("Header sending... \n")
@@ -55,9 +71,13 @@ class ntripClient():
             if 'OK' in data: 
                 break
             time.sleep(1)
+
+    def run(self):
+        # 主程序
+        self.conn_svr()
         self.recv_from_svr()
 
 
 if __name__ == '__main__':
-    n = ntripClient(mount_pt='sweet_bds', ser_port='/dev/ttyUSB0')
+    n = ntripClient(mount_pt='sweet_bds')
     n.run()

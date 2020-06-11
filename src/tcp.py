@@ -121,7 +121,7 @@ class tcp(redisHandler):
                 'data':''
                 }
         heartbeat = json.dumps(heartbeat)
-        timeout = 120
+        timeout = 60
         pre_time = time.time()
         while True:
             now = time.time()

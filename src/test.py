@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import socket
 
 p_a = np.array([1, -0.01])
 p_b = np.array([1, 0])
@@ -20,3 +21,10 @@ print(yaw)
 if k < 0:
     yaw = 6.28 - yaw
 print(yaw)
+
+addr = ('117.184.129.1', 8080)
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+try:
+    s.connect(addr)
+except Exception as e:
+    print(e)
