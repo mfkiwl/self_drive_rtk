@@ -16,6 +16,8 @@ from redisHandler import redisHandler
 
 class tcp(redisHandler):
     def __init__(self):
+        # 心跳时间
+        self.timeout = 30
         self.conf = config()
         self.name = self.conf.robot['name']
         self.key = self.conf.robot['key']
@@ -121,16 +123,19 @@ class tcp(redisHandler):
                 'data':''
                 }
         heartbeat = json.dumps(heartbeat)
-        timeout = 60
         pre_time = time.time()
+        pre_server_t = time.time()
         while True:
             now = time.time()
-            if now - pre_time >= timeout:
+            if now - pre_server_t > self.timeout:
+                self.robot_on()
+                pre_server_t = now
+            if now - pre_time >= self.timeout / 3.0:
+                # 向服务器发送心跳，保持连接
                 print('tcp heart beat')
                 pre_time = now
                 try:
                     t = self.sock.sendall(heartbeat)
-                    print(t)
                 except Exception as e:
                     print(e)
                     self.robot_on()
@@ -138,7 +143,7 @@ class tcp(redisHandler):
             data = self.q_get_nowait()
             data_recv = self.recv_q_get()
             if data_recv:
-                pre_time = time.time()
+                pre_server_t = now
                 # 来自tcp server 云的消息，publish 至tcp_out topic
                 for topic in self.pub_topics:
                     try:
@@ -149,7 +154,7 @@ class tcp(redisHandler):
 
             if data:
                 # tcp_in topic 发送至云server
-                pre_time = time.time()
+                pre_time = now
                 try:
                     self.sock.sendall(data)
                 except Exception as e:

@@ -52,6 +52,10 @@ class Motor:
         :param speed: -1 ~ +1
         :return: bool
         """
+        if speed > 1:
+            speed = 1
+        elif speed < -1:
+            speed = -1
         speed = int(speed * self._max_speed)
         if speed >= 0:
             # 速度大于等于零

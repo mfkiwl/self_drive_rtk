@@ -336,6 +336,7 @@ class tracking(redisHandler):
                         rc.publish('tcp_out', json.dumps(data_main))
                         print('get_goal')
                         time.sleep(1)
+                        rc.publish('move_base_in', json.dumps(data_speed))
                         rc.publish('tcp_out', json.dumps(data_main))
                         tracking_flag = False
                         pre_d = None
