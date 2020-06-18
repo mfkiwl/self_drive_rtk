@@ -39,6 +39,7 @@ EOF
 
 gnome-terminal --window --title='robot' -- ./robot
 gnome-terminal --window --title='tracking' -- ../tracking/tracking
+# gnome-terminal --window --title='tracking_single' -- ../tracking_single/tracking_single
 gnome-terminal --window --title='track_cmd' -- ../track_cmd/track_cmd
 
 

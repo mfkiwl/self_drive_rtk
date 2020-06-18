@@ -5,8 +5,9 @@ import json
 import time
 from math import cos, sin
 import serialCmd
-from motorTongyiIxL import Motor
+# from motorTongyiIxL import Motor
 # from motorDMK import Motor
+from motor055a import Motor
 from redisHandler import redisHandler
 
 
@@ -15,6 +16,8 @@ class moveBase(redisHandler):
     机器人底盘
     """
     def init(self):
+        # 障碍物传感器启用开关
+        self.ob_isvalid = True
         self.pub_topics = ['move_base_out']
         self.sub_topics = ['move_base_in']
         self.left_wheel = Motor(2, '/dev/ttyS2')
@@ -33,11 +36,18 @@ class moveBase(redisHandler):
         # 主进程
         self.init()
         pre_time = time.time()
+        pre_t_ob = time.time() 
         timeout = 2.0
+        # 有障碍物标志
+        ob_flag = False
         while True:
             try:
                 now = time.time()
-                if now - pre_time >= timeout:
+                if now - pre_t_ob >= timeout:
+                    # 超时未收到无障碍物标志
+                    ob_flag = True
+                if now - pre_time >= timeout or (ob_flag and self.ob_isvalid):
+                    # 有障碍物或者控制命令超时未收到
                     pre_time = now
                     print('time out')
                     self.write_speed(0, 0, 0)
@@ -48,12 +58,15 @@ class moveBase(redisHandler):
                 header = data['header']
                 data = data['data']
                 if header == 'init':
+                    # 初始化
                     pre_time = time.time()
                     self.init_motor()
-                elif header == 'speed':
+                elif header == 'speed' and (not (ob_flag and self.ob_isvalid)):
+                    # 无障碍物，或者障碍物传感器未启用，速度发送
                     pre_time = time.time()
                     self.write_speed(data['y'], data['angle'], data['speed'])
                 elif header == 'heartbeat':
+                    # 心跳
                     pre_time = time.time()
                     base_info = self.read_base_info()
                     data_pub = {
@@ -62,12 +75,23 @@ class moveBase(redisHandler):
                             }
                     self.pub_all(data_pub)
                 elif header == 'get_base_info':
+                    # 获取基本信息
                     base_info = self.read_base_info()
                     data_pub = {
                             'header':'base_info',
                             'data':base_info
                             }
                     self.pub_all(data_pub)
+                elif header == 'ob_invalid':
+                    # 无障碍物
+                    pre_t_ob = time.time()
+                    ob_flag = False
+                elif header == 'ob_on':
+                    # 开启障碍物检测
+                    self.ob_isvalid = True
+                elif header == 'ob_off':
+                    # 关闭障碍物检测
+                    self.ob_isvalid = False
             except Exception as e:
                 print('move base err')
                 print(e)

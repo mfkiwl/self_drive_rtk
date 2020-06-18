@@ -22,6 +22,10 @@ move_base_in:
         header:heartbeat
         data:None
 
+        # 障碍物无效
+        header:ob_invalid
+        data:None
+
 move_base_out:
         header:base_info
         data:{'left':[0,0,0,0], 'right':[0,0,0,0]}
@@ -122,9 +126,13 @@ track_cmd_out:
         None
 
 ###############
-# Node: 
+# Node:ultrasound 
 ###############
-None
+move_base_in:
+        header:ob_off
+        data:None
+
+
 ###############
 # Node: 
 ###############

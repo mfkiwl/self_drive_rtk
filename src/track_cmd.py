@@ -57,10 +57,18 @@ class track_cmd(redisHandler):
                         for item in cmd_list:
                             x0 = item[0][0]
                             y0 = item[0][1]
+                            yaw0 = item[0][2]
+                            # 向量p_a
+                            # p_a = np.array([math.cos(yaw0), math.sin(yaw0)])
+                            # 目标点-->当前点向量p_b
+                            p_b = np.array([x-x0, y-y0])
+                            len_b = np.linalg.norm(p_b)
+                            # dot_ab = p_a.dot(p_b)
+                            k_ab = p_b[1] * p_a[0] - p_b[0] * p_a[1]
                             cmd = item[1]
-                            d = math.sqrt((x-x0)**2 + (y-y0)**2)
                             # print(d)
-                            if d <= delta_goal:
+                            if len_b <= delta_goal and k_ab > 0:
+                                # 当前点在yaw0的锐角方向，且误差小于delta_goal
                                 for i_cmd in cmd:
                                     print(i_cmd)
                                     data_cmd['data'] = i_cmd

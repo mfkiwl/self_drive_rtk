@@ -13,7 +13,6 @@ import sys
 import json
 import requests
 import redis
-import matplotlib.pyplot as plt
 import numpy as np
 from redisHandler import redisHandler
 
@@ -207,18 +206,6 @@ def diff_speed_control(state, trajectory, pind):
     return d, yaw_ba
 
 
-def plot_arrow(x, y, yaw, length=1.0, width=0.5, fc="r", ec="k"):
-    """
-    Plot arrow
-    """
-
-    if not isinstance(x, float):
-        for ix, iy, iyaw in zip(x, y, yaw):
-            plot_arrow(ix, iy, iyaw)
-    else:
-        plt.arrow(x, y, length * math.cos(yaw), length * math.sin(yaw),
-                  fc=fc, ec=ec, head_width=width, head_length=width)
-        plt.plot(x, y)
 
 
 def speed_pid(pre_d, d, dyaw, dt):
@@ -298,6 +285,10 @@ class tracking(redisHandler):
         kd_t = 0.0      # 一个周期时间
         pre_time = time.time()  # 上一周期时间
         tracking_flag = True
+        # x 轴单位向量
+        p_a = np.array([1, 0])
+        # 上一点
+        pre_position = None
         while True:
             data = self.q_get_nowait()
             if data:
@@ -312,9 +303,31 @@ class tracking(redisHandler):
                 # rtk 位置信息
                 position = data
                 if position['rtk_mod'] == 4:
-                    state.x = position['p'][0]
-                    state.y = position['p'][1]
-                    state.yaw = position['angle']
+                    # 
+                    x = position['p'][0]
+                    y = position['p'][1]
+                    if pre_position is None:
+                        pre_position = {
+                                'p':[x, y],
+                                'is_yaw': False
+                                }
+                    # 当前点与之前点向量p_b
+                    p_b = np.array([x-pre_position['p'][0], y-pre_position['p'][1]])
+                    len_b = np.linalg.norm(p_b)
+                    # len_b >= 20cm 距离有效,记录当前方向
+                    if len_b >= 0.2:
+                        dot_ab = p_a.dot(p_b)
+                        # len_a = 1 单位向量
+                        yaw_ab = np.arccos(dot_ab / (1 * len_b))
+                        k_ab = p_b[1] * p_a[0] - p_b[0] * p_a[1]
+                        if k_ab < 0:
+                            yaw_ab = 6.28 - yaw-ab
+                        state.yaw = yaw_ab
+                        pre_position['p'] = [x, y]
+                        pre_position['is_yaw'] = True
+                    state.x = x
+                    state.y = y
+                    # state.yaw = position['angle']
                     # 路径跟踪
                     if lastIndex > target_ind and tracking_flag:
                         # 计算控制输入
@@ -387,21 +400,26 @@ class tracking(redisHandler):
                         'data': [state.x, state.y, state.yaw]
                         }
                 rc.publish('tcp_in', json.dumps(pos_msg))
-
-
-            if show_animation:  # pragma: no cover
-                plt.cla()
-                # for stopping simulation with the esc key.
-                plt.gcf().canvas.mpl_connect(
-                    'key_release_event',
-                    lambda event: [exit(0) if event.key == 'escape' else None])
-                plot_arrow(state.x, state.y, state.yaw)
-                plt.plot(cx, cy, "-r", label="course")
-                plt.plot(cx[target_ind], cy[target_ind], "xg", label="target")
-                plt.axis("equal")
-                plt.grid(True)
-                plt.title("Speed[km/h]:" + str(state.v * 3.6)[:4])
-                plt.pause(0.001)
+            elif header == 'pos_init':
+                # 初始化机器人位姿, 以20%的速度向前运动
+                pre_t = time.time()
+                while True:
+                    now = time.time()
+                    data_speed['data']['angle'] = 0
+                    data_speed['data']['y'] = 1
+                    t_speed = data_speed['data']['speed']
+                    data_speed['data']['speed'] = 20
+                    # 发速度指令至电机
+                    rc.publish('move_base_in', json.dumps(data_speed))
+                    time.sleep(0.2)
+                    print('pid: %.2f, d: %.2f, yaw: %.2f'%(pid_para, d, dyaw))
+                    data_speed['data']['speed'] = t_speed
+                    if now - pre_t > 2:
+                        break
+                # 电机停止
+                data_speed['data']['angle'] = 0
+                data_speed['data']['y'] = 0
+                rc.publish('move_base_in', json.dumps(data_speed))
 
         # Test
         assert lastIndex >= target_ind, "Cannot goal"

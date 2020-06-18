@@ -8,6 +8,7 @@ from ctrl import ctrl
 from main import main
 from rtk import rtk
 from pushImg import pushImg
+from ultrasound import ultrasound
 
 if __name__ == '__main__':
     p_list = []
@@ -32,6 +33,10 @@ if __name__ == '__main__':
     p_list.append(p)
 
     node = pushImg()
+    p = Process(target=node.run)
+    p_list.append(p)
+
+    node = ultrasound()
     p = Process(target=node.run)
     p_list.append(p)
 
