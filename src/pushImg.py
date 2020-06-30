@@ -163,7 +163,7 @@ class pushImg(redisHandler):
                 cv.imshow('cam', frame)
                 if cv.waitKey(1) & 0xFF == ord('q'):
                     break
-                '''
+                # '''
                 if sleep_time<=0 and self.__run_flag and ret:
                     # 发送视频
                     frame = cv.resize(frame, self.__img_quality[self.__img_quality_index])

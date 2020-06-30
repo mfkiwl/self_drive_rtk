@@ -1,1 +1,1 @@
-XiaoQiang (192.168.28.1) at 8c:53:c3:00:49:05 [ether] on wlp4s0b1
+_gateway (192.168.0.1) at 78:52:62:2e:af:1a [ether] on enp3s0

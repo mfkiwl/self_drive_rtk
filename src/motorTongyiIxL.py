@@ -89,7 +89,7 @@ class Motor:
             speed = self._motor.read_register(self._addr_data['cur_speed'])
             flag = (speed&0b1000000000000000)>>15       # < 0
             if flag:
-                print('-----------------')
+                # print('-----------------')
                 speed=-(0xffff-speed)
             speed /=10.0
             return round(speed)
@@ -176,7 +176,7 @@ class Motor:
         """
         try:
             err = self._motor.read_register(self._addr_data['err'])
-            print("err code", err)
+            # print("err code", err)
             return err
         except BaseException as e:
             # print e

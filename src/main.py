@@ -12,10 +12,10 @@ class main(redisHandler):
     """
     def init(self):
         self.sub_topics = ['tcp_out', 'move_base_out', 'pushimg_out', 'ctrl_out', 'tracking_out']
-        self.move_base_header = ['init', 'speed', 'heartbeat']
+        self.move_base_header = ['init', 'speed', 'heartbeat', 'get_base_info']
         self.ctrl_header = ['ctrl']
         self.pushimg_header = ['camera_on', 'camera_off']
-        self.tracking_header = ['auto_on', 'auto_off', 'get_pos']
+        self.tracking_header = ['auto_on', 'auto_off', 'get_pos', 'auto_continue']
 
         self.sys_ctrl = systemCtrl.systemCtrl()
         self.start_sub()
@@ -44,15 +44,12 @@ class main(redisHandler):
                         elif header in self.tracking_header:
                             self.rc.publish('tracking_in', data)
                             self.rc.publish('track_cmd_in', data)
-                            if header == 'auto_on':
+                            if header == 'auto_on' or header == 'auto_continue':
                                 # 自动开始
                                 auto_flag = True
                             elif header == 'auto_off':
                                 #　自动结束
                                 auto_flag = False
-                        elif header == 'get_base_info':
-                            # 获取基本信息
-                            self.rc.publish('move_base_in', data)
                         elif header == 'shutdown':
                             # 关机
                             self.sys_ctrl.shut_down()

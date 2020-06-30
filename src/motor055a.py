@@ -162,19 +162,19 @@ class Motor:
 
 
 if __name__ == '__main__':
-    wheel = Motor(01, '/dev/ttyS2')
+    wheel = Motor(01, '/dev/ttyS3')
     print "####enable############"
     # print wheel.ini_motor()
-    wheel.write_speed(0.5)
+    wheel.write_speed(0.01)
     time.sleep(5)
     print(wheel.read_base_info())
-    wheel.write_speed(-0.5)
+    wheel.write_speed(-0.01)
     time.sleep(5)
     print(wheel.read_base_info())
-    wheel.write_speed(1)
+    wheel.write_speed(0.01)
     time.sleep(5)
     print(wheel.read_base_info())
-    wheel.write_speed(-1)
+    wheel.write_speed(-0.01)
     time.sleep(5)
     print(wheel.read_base_info())
     wheel.write_speed(-0.0)

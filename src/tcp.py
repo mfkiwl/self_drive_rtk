@@ -132,7 +132,7 @@ class tcp(redisHandler):
                 pre_server_t = now
             if now - pre_time >= self.timeout / 3.0:
                 # 向服务器发送心跳，保持连接
-                print('tcp heart beat')
+                # print('tcp heart beat')
                 pre_time = now
                 try:
                     t = self.sock.sendall(heartbeat)

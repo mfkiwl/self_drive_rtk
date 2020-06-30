@@ -35,11 +35,11 @@ if __name__ == '__main__':
     node = pushImg()
     p = Process(target=node.run)
     p_list.append(p)
-
+    '''
     node = ultrasound()
     p = Process(target=node.run)
     p_list.append(p)
-
+    '''
     try: 
         for p in p_list:
             p.daemon = True

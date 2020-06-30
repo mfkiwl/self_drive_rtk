@@ -9,9 +9,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import MultipleLocator
 from multiprocessing import Queue
+from math import sin, cos
 import numpy as np
-from tf import transformations
-import pygame
 import ntripClient
 
 
@@ -26,8 +25,35 @@ class WGS84():
         self.p = self.calc_xyz(lon, lat, self.h)    # 坐标原点
         self.lon = math.radians(lon)
         self.lat = math.radians(lat)
-        self.rotation = transformations.euler_matrix(self.lon, math.pi/2-self.lat, 0.0, 'rzyx')
+        self.rotation = self.euler_to_rotation(0.0, math.pi/2-self.lat, self.lon, 'rzyx') 
         self.translation = -self.p
+
+
+    def euler_to_rotation(self, roll, pitch, yaw, mod = 'rzyx'):
+        # 绕x旋转
+        r_x = np.array([
+            [1, 0, 0], 
+            [0, cos(roll), -sin(roll)],
+            [0, sin(roll), cos(roll)]
+            ])
+        # 绕y旋转
+        r_y = np.array([
+            [cos(pitch), 0, sin(pitch)],
+            [0, 1, 0], 
+            [-sin(pitch),0, cos(pitch)]
+            ])
+        # 绕z旋转
+        r_z = np.array([
+            [cos(yaw), -sin(yaw), 0], 
+            [sin(yaw), cos(yaw), 0], 
+            [0, 0, 1]
+            ])
+        if mod == 'rzyx':
+            r = np.dot(r_z, np.dot(r_y, r_x))
+        else:
+            r = None
+        return r
+
 
         
     def calc_xyz(self, lon, lat, h):
@@ -126,39 +152,9 @@ class rtk():
 
 
 
-def key_event():
-    global enter_flag
-    global space_flag
-    global ctr_flag
-    global left_enter_flag
-    pygame.init()
-    screen = pygame.display.set_mode((600,600))
-    screen.fill((255,255,255))
-    while True:
-        '''
-        keys = pygame.key.get_pressed()
-        print(keys[pygame.K_RIGHT])
-        time.sleep(0.5)
-        '''
-        events = pygame.event.get()
-        time.sleep(0.2)
-        for event in events:
-            try:
-                event_type = event.type
-                event_key = event.dict['key']
-                # print(event_key)
-                if event_type == 2 and event_key == 13:
-                    enter_flag = True
-                elif event_type == 2 and event_key == 306:
-                    ctr_flag = True
-                elif event_type == 2 and event_key == 32:
-                    space_flag = True
-                elif event_type == 2 and event_key == 271:
-                    left_enter_flag = True
-            except:
-                pass
 
 def call_back(event):
+    # 键盘事件
     global enter_flag
     global space_flag
     global ctr_flag
@@ -167,17 +163,22 @@ def call_back(event):
     try:
         event_key = event.key
         if event_key == 'enter':
+            # 保存
             enter_flag = True
         elif event_key == 'control':
+            # 刷新
             ctr_flag = True
         elif event_key == ' ':
+            # 自动记录
             space_flag = True
         elif event_key == 'a':
+            # 手动记录
             left_enter_flag = True
         elif event_key == 'up':
+            # 储存文件名序号上升
             reset = True
-        '''
         print(event_key)
+        '''
         print(enter_flag)
         print(space_flag)
         print(ctr_flag)
@@ -201,11 +202,6 @@ if __name__ == '__main__':
     ind = 0
     reset = False
     file_name = 'position' + str(ind) + '.txt'
-    '''
-    p = threading.Thread(target=key_event)
-    p.setDaemon(True)
-    p.start()
-    '''
     fig, ax = plt.subplots()
     # 键盘事件
     fig.canvas.mpl_connect('key_press_event', call_back)
@@ -225,9 +221,6 @@ if __name__ == '__main__':
             continue
         p = data['p']
 
-        # p = p + rtk_rover.wgs84.translation
-        # p =np.dot(p, rtk_rover.wgs84.rotation)
-        # print('rtk: %d, x: %.3f, y: %.3f, z: %.3f, angle: %.2f'%(data['is_fix'], p[0], p[1], p[2], data['angle']))
         if space_flag:
             # 自动记录
             # space_flag = False

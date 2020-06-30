@@ -13,7 +13,7 @@ class ultrasound(redisHandler):
         else:
             self.port = port
         # 数据读取频率
-        self.hz = 1
+        self.hz = 0.8
         # 遇障碍物停止的最小距离
         self.min_dist = 500
         self.ser = serial.Serial(self.port, 9600, timeout=0.5, write_timeout=0.5)
@@ -43,11 +43,13 @@ class ultrasound(redisHandler):
             now = time.time()
             if now - pre_time >= timeout:
                 data = self.get_data()
-                print(data)
+                # print(data)
                 if data:
-                    min_data = min(data)
-                    print(min_data)
-                    if min_data > self.min_dist:
+                    is_ob = False
+                    for i_data in data:
+                        if i_data < self.min_dist and i_data != 0:
+                            is_ob = True
+                    if not is_ob:
                         self.pub_all(pub_data)
             else:
                 time.sleep(sleep_time)
@@ -116,8 +118,8 @@ class ultrasound(redisHandler):
 
 if __name__ == '__main__':
     print('start:')
-    dev = ultrasound('/dev/ttyS6')
+    dev = ultrasound('/dev/ttyS5')
     dev.run()
     while True:
-        print(dev.get_data())
+        dev.get_data()
         time.sleep(0.5)

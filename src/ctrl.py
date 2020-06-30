@@ -23,7 +23,7 @@ class ctrl(redisHandler):
                 if data:
                     data = data['data']
                     data = '*' + str(data) + '#'
-                    print(data)
+                    # print(data)
                     if not self.ser.serial.isOpen():
                         self.ser.open_port()
                     self.ser.send_cmd(data)

@@ -5,9 +5,9 @@ import json
 import time
 from math import cos, sin
 import serialCmd
-# from motorTongyiIxL import Motor
+from motorTongyiIxL import Motor
 # from motorDMK import Motor
-from motor055a import Motor
+# from motor055a import Motor
 from redisHandler import redisHandler
 
 
@@ -17,10 +17,10 @@ class moveBase(redisHandler):
     """
     def init(self):
         # 障碍物传感器启用开关
-        self.ob_isvalid = True
+        self.ob_isvalid = False
         self.pub_topics = ['move_base_out']
         self.sub_topics = ['move_base_in']
-        self.left_wheel = Motor(2, '/dev/ttyS2')
+        self.left_wheel = Motor(1, '/dev/ttyS2')
         # self.left_wheel1 = Motor(1, '/dev/ttyS2')
         self.right_wheel = Motor(1, '/dev/ttyS3')
         # self.right_wheel1 = Motor(2, '/dev/ttyS3')
@@ -94,7 +94,7 @@ class moveBase(redisHandler):
                     self.ob_isvalid = False
             except Exception as e:
                 print('move base err')
-                print(e)
+                # print(e)
 
     def write_speed(self, y, angle, speed):
         """
@@ -116,7 +116,7 @@ class moveBase(redisHandler):
             l = 1 + 2 * sin(angle)
         l  = l * speed / 100.0 * y
         r  = r * speed / 100.0 * y
-        print('speed_l: ', l, 'speed_r: ', r)
+        # print('speed_l: ', l, 'speed_r: ', r)
         self.left_wheel.write_speed(l)
         # self.left_wheel1.write_speed(l)
         self.right_wheel.write_speed(r)
