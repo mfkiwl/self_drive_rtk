@@ -74,7 +74,6 @@ class serialCmd(object):
         elif isinstance(cmd_value, int):
             self.serial.write(cmd_value)
         elif isinstance(cmd_value, str):
-            print('data type of cmd_value is string')
             for i in cmd_value:
                 self.serial.write(i)
             return True

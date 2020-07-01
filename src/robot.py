@@ -6,9 +6,11 @@ from tcp import tcp
 from moveBase import moveBase
 from ctrl import ctrl
 from main import main
+from joy import joy
 from rtk import rtk
 from pushImg import pushImg
 from ultrasound import ultrasound
+
 
 if __name__ == '__main__':
     p_list = []
@@ -25,6 +27,10 @@ if __name__ == '__main__':
     p_list.append(p)
 
     node = main()
+    p = Process(target=node.run)
+    p_list.append(p)
+
+    node = joy()
     p = Process(target=node.run)
     p_list.append(p)
 

@@ -1,32 +1,33 @@
 #_*_ coding: utf-8 _*_
 
-import sys
 import os
-import pyttsx
-import time
+# import pyttsx
+# import time
 
 
 class systemCtrl():
 
     def __init__(self):
-        self.voice = pyttsx.init()
-        self.say('robot on')
+        pass
+        # self.voice = pyttsx.init()
+        # self.say('robot on')
 
     def shut_down(self):
-        self.say('shutdown after 5 seconds')
-        time.sleep(5)
+        # self.say('shutdown after 5 seconds')
+        # time.sleep(5)
         os.system('init 0')
 
     def reboot(self):
-        self.say('restart after 6 seconds')
-        time.sleep(5)
+        # self.say('restart after 6 seconds')
+        # time.sleep(5)
         os.system('init 6')
 
     def say(self, data):
-        self.voice.say(data)
-        self.voice.runAndWait()
+        pass
+        # self.voice.say(data)
+        # self.voice.runAndWait()
 
 
 if __name__ == '__main__':
     voice = systemCtrl()
-    voice.say(123)
+    # voice.say(123)

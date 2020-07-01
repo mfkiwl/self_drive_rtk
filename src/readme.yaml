@@ -31,13 +31,13 @@ move_base_out:
         data:{'left':[0,0,0,0], 'right':[0,0,0,0]}
 
 ###############
-# Node:cmd
+# Node:ctrl
 ###############
-cmd_in:
-        header:cmd
+ctrl_in:
+        header:ctrl
         data:''
 
-cmd_out:
+ctrl_out:
         None
 
 ###############
@@ -98,6 +98,9 @@ tracking_in:
         data:{}
 
         header:auto_off
+        data:None
+
+        header:auto_continue
         data:None
 
         header:get_pos
