@@ -11,6 +11,7 @@ class joy(redisHandler):
     机器人主函数
     """
     def init(self, port = '/dev/ttyS4'):
+        print('joy init')
         self.ser = serial.Serial(port=port, baudrate=9600, timeout=0.2, write_timeout=0.2)
         self.joy_on = False
 
@@ -36,14 +37,15 @@ class joy(redisHandler):
                     if ',' in data:
                         data = data.split(',')
                         speed = int(data[0])
-                        if abs(speed) < 5:
-                            speed = 0
                         angle = int(data[1]) / 100.0
                         y = 0
                         if speed > 0:
                             y = 1
                         elif speed < 0:
                             y = -1
+                            speed = -speed
+                        if speed < 6:
+                            speed = 0
                         res = {
                                 'header':'speed',
                                 'data':{

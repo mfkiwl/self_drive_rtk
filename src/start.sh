@@ -25,7 +25,7 @@ sudo -S chmod 777 /dev/ttyS6 << EOF
 1
 EOF
 
-cd /home/guardrobot/Desktop/robot
+cd /home/sweet/Desktop/robot/robot
 
 sudo -S chmod +x robot << EOF
 1
@@ -38,9 +38,11 @@ sudo -S chmod +x ../track_cmd/track_cmd << EOF
 EOF
 
 gnome-terminal --window --title='robot' -- ./robot
-gnome-terminal --window --title='tracking' -- ../tracking/tracking
+cd ../tracking
+gnome-terminal --window --title='tracking' -- ./tracking
 # gnome-terminal --window --title='tracking_single' -- ../tracking_single/tracking_single
-gnome-terminal --window --title='track_cmd' -- ../track_cmd/track_cmd
+cd ../track_cmd
+gnome-terminal --window --title='track_cmd' -- ./track_cmd
 
 
 exit 0

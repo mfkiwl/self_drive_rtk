@@ -3,6 +3,7 @@
 
 import yaml
 import os
+import sys
 import time
 
 class config():
@@ -14,8 +15,9 @@ class config():
         self.config = {
                 'robot':self.robot
                 }
-        # 获取当前目录
-        self.file_name_path = os.path.split(os.path.realpath(__file__))[0]
+        # 获取当前目录的上一层
+        # self.file_name_path = os.path.split(os.path.realpath(__file__))[0]
+        self.file_name_path = os.path.dirname(os.path.abspath(sys.argv[0])) + '/..'
         # 合成配置文件目录
         self.yaml_path = os.path.join(self.file_name_path, file_name)
         try:
