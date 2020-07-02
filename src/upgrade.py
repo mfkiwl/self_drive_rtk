@@ -18,7 +18,7 @@ def run():
 def start():
     time.sleep(30)
     upgrade()
-    time.sleep(30)
+    time.sleep(5)
     run()
     time.sleep(30)
 
